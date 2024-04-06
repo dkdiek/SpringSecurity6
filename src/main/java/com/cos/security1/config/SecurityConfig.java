@@ -22,7 +22,7 @@ public class SecurityConfig {
 //        특정 경로에 대한 인가 작업
         http
                 .authorizeHttpRequests((auth)-> auth
-                        .requestMatchers("/","/login").permitAll()
+                        .requestMatchers("/","/login","/loginProc","/join","/joinProc").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/my/**").hasAnyRole("ADMIN","USER")
                         .anyRequest().authenticated()
