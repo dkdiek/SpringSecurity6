@@ -6,8 +6,10 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+    session:
+      timeout: 90m #90분 세션 유지
 
-#DB ??
+#DB 설정
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
