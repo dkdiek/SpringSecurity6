@@ -2,6 +2,7 @@ package com.cos.security1.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,22 +28,27 @@ public class SecurityConfig {
                         .requestMatchers("/my/**").hasAnyRole("ADMIN","USER")
                         .anyRequest().authenticated()
                 );
-//        커스텀 로그인 페이지
-        http
+//        커스텀 로그인 페이지(폼로그인
+/*        http
                 .formLogin((auth)-> auth.loginPage("/login")
                         .loginProcessingUrl("/loginProc")
                         .permitAll()
-                );
+                );*/
+//        http basic 방식 로그인
+        http
+                .httpBasic(Customizer.withDefaults());
+
 /*        csrfFilter를 통해 post,put,delete 요청에 대해서 토큰 검증을 진행한다
         csrf사용시 logout을 put방식으로 해야한다
-        앱에서 사용하는 api 서버의 경우 보통 세션을 stateless로 관리해서 csrf 설정을 진행하지 않고 jwt 방식 사용
-        http.csrf((auth)->auth.disable());*/
-//        csrf get logout처리
+        앱에서 사용하는 api 서버의 경우 보통 세션을 stateless로 관리해서 csrf 설정을 진행하지 않고 jwt 방식 사용*/
+        http.csrf((auth)->auth.disable());
+
+/*//        csrf get logout처리
         http.
                 logout((auth)-> auth.logoutUrl("/logout")
-                        .logoutSuccessUrl("/"));
+                        .logoutSuccessUrl("/"));*/
 
-//        동일한 아이디로 다중 로그인을 진행할 경우 세션 통제를 통해 진행
+/*//        동일한 아이디로 다중 로그인을 진행할 경우 세션 통제를 통해 진행
         http
                 //메소드를 통한 설정
                 .sessionManagement((auth) -> auth
@@ -54,7 +60,7 @@ public class SecurityConfig {
 //        .none 로그인 시 세션 정보 변경안함 .newSession 로그인 시 세션 새로 생성 .changeSessionId() 로그인 시 동일한 세션에 대한 id 변경
         http
                 .sessionManagement((auth) -> auth
-                        .sessionFixation().changeSessionId());
+                        .sessionFixation().changeSessionId());*/
 
 
         return http.build();
