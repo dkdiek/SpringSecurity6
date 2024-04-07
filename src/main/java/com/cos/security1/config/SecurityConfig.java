@@ -33,11 +33,14 @@ public class SecurityConfig {
                         .loginProcessingUrl("/loginProc")
                         .permitAll()
                 );
-//        csrfFilter를 통해 post,put,delete 요청에 대해서 토큰 검증을 진행한다
-//        csrf사용시 logout을 put방식으로 해야한다
-//        앱에서 사용하는 api 서버의 경우 보통 세션을 stateless로 관리해서 csrf 설정을 진행하지 않고 jwt 방식 사용
-//        http
-//                .csrf((auth)->auth.disable());
+/*        csrfFilter를 통해 post,put,delete 요청에 대해서 토큰 검증을 진행한다
+        csrf사용시 logout을 put방식으로 해야한다
+        앱에서 사용하는 api 서버의 경우 보통 세션을 stateless로 관리해서 csrf 설정을 진행하지 않고 jwt 방식 사용
+        http.csrf((auth)->auth.disable());*/
+//        csrf get logout처리
+        http.
+                logout((auth)-> auth.logoutUrl("/logout")
+                        .logoutSuccessUrl("/"));
 
 //        동일한 아이디로 다중 로그인을 진행할 경우 세션 통제를 통해 진행
         http
