@@ -2,10 +2,16 @@ package com.cos.security1.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -18,25 +24,33 @@ public class SecurityConfig {
     }
 
     @Bean
+    public RoleHierarchy roleHierarchy(){
+        RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
+        hierarchy.setHierarchy("ROLE_C > ROLE_B\n"+"ROLE_B > ROLE_A");
+        return hierarchy;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 //        특정 경로에 대한 인가 작업
         http
                 .authorizeHttpRequests((auth)-> auth
-                        .requestMatchers("/","/login","/loginProc","/join","/joinProc").permitAll()
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/my/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers("/lgoin").permitAll()
+                        .requestMatchers("/").hasRole("A")
+                        .requestMatchers("/manager").hasAnyRole("B")
+                        .requestMatchers("/admin").hasAnyRole("C")
                         .anyRequest().authenticated()
                 );
 //        커스텀 로그인 페이지(폼로그인
-/*        http
+        http
                 .formLogin((auth)-> auth.loginPage("/login")
                         .loginProcessingUrl("/loginProc")
                         .permitAll()
-                );*/
-//        http basic 방식 로그인
+                );
+/*//        http basic 방식 로그인
         http
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(Customizer.withDefaults());*/
 
 /*        csrfFilter를 통해 post,put,delete 요청에 대해서 토큰 검증을 진행한다
         csrf사용시 logout을 put방식으로 해야한다
@@ -61,9 +75,17 @@ public class SecurityConfig {
         http
                 .sessionManagement((auth) -> auth
                         .sessionFixation().changeSessionId());*/
-
-
         return http.build();
     }
+    @Bean
+    public UserDetailsService userDetailsService(){
+        UserDetails user1 = User.builder()
+                .username("user1")
+                .password(bCryptPasswordEncoder().encode("1234"))
+                .roles("C")
+                .build();
 
+        return new InMemoryUserDetailsManager(user1);
+
+    }
 }
